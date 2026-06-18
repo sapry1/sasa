@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="SMART MENU CMS - نظام إدارة المطاعم والكافيهات الاحترافي">
+  <meta property="og:locale" content="ar">
+  <meta name="theme-color" content="#FF6B00">
+  <title>SMART MENU</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- SVG Logo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+</head>
+<body>
+
+<!-- ============================================================
+     شريط التحميل العلوي
+     ============================================================ -->
+<div id="page-loader" style="position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--primary-light));z-index:9999;transition:opacity 0.5s;transform-origin:left;animation:loadBar 1.5s ease forwards"></div>
+<style>
+@keyframes loadBar { 0%{transform:scaleX(0)} 80%{transform:scaleX(0.9)} 100%{transform:scaleX(1);opacity:0} }
+</style>
+
+<!-- ============================================================
+     الهيدر الرئيسي
+     ============================================================ -->
+<header class="header" id="main-header">
+  <!-- شعار المتجر (7 ضغطات تفتح لوحة التحكم) -->
+  <div class="header-logo" id="store-logo-tap" title="SMART MENU">
+    <svg class="store-logo-img" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius:10px">
+      <rect width="100" height="100" rx="20" fill="#FF6B00"/>
+      <text x="50" y="70" text-anchor="middle" font-size="55" fill="white">🍽️</text>
+    </svg>
+    <span class="header-logo-text store-name-text">SMART MENU</span>
+  </div>
+
+  <div class="header-spacer"></div>
+
+  <!-- أزرار الهيدر -->
+  <div class="header-actions">
+
+    <!-- بحث -->
+    <button class="header-btn" id="search-btn" title="بحث">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+
+    <!-- المفضلة -->
+    <button class="header-btn" onclick="navigate('/favorites')" title="المفضلة" style="position:relative">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="badge fav-badge" style="display:none">0</span>
+    </button>
+
+    <!-- السلة -->
+    <button class="header-btn" onclick="openCart()" title="السلة" style="position:relative">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="badge cart-badge" style="display:none">0</span>
+    </button>
+
+    <!-- الإشعارات -->
+    <div style="position:relative">
+      <button class="header-btn" id="notif-btn" title="الإشعارات" style="position:relative">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge notif-badge" style="display:none">0</span>
+      </button>
+
+      <!-- قائمة الإشعارات المنسدلة -->
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-header">
+          <span>الإشعارات</span>
+          <button onclick="markAllRead()" style="font-size:12px;color:var(--primary);cursor:pointer">تعليم الكل كمقروء</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div style="text-align:center;padding:30px;color:var(--text3)">جاري التحميل...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- زر تسجيل الدخول -->
+    <button class="header-btn login-btn" onclick="showLoginModal()" title="تسجيل الدخول" style="background:var(--primary);color:white;border-color:var(--primary);padding:0 14px;width:auto;gap:6px;font-size:13px;font-weight:700">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <span class="hide-sm" data-key="login">دخول</span>
+    </button>
+
+    <!-- صورة المستخدم المسجل -->
+    <div class="user-avatar user-menu" onclick="navigate('/profile')" title="حسابي" style="display:none">
+      <span class="user-name" style="font-size:13px">م</span>
+    </div>
+
+    <!-- زر السايدبار -->
+    <button class="header-btn" onclick="openSidebar()" title="القائمة">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================
+     القائمة الجانبية
+     ============================================================ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" class="store-logo-img">
+        <rect width="100" height="100" rx="20" fill="#FF6B00"/>
+        <text x="50" y="70" text-anchor="middle" font-size="55" fill="white">🍽️</text>
+      </svg>
+    </div>
+    <div>
+      <div class="sidebar-store-name store-name-text">SMART MENU</div>
+      <div class="sidebar-store-desc store-desc-text">المتجر الإلكتروني</div>
+    </div>
+    <button class="modal-close" onclick="closeSidebar()" style="margin-right:auto">✕</button>
+  </div>
+
+  <!-- عداد المتصلين -->
+  <div class="sidebar-online">
+    <div class="online-dot"></div>
+    <span><span class="online-count">1</span> <span data-key="connected_now">زائر متصل الآن</span></span>
+  </div>
+
+  <!-- روابط القائمة -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">القائمة الرئيسية</div>
+
+    <a class="sidebar-link" onclick="navigate('/');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span data-key="home">الرئيسية</span>
+    </a>
+
+    <a class="sidebar-link" onclick="navigate('/categories');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span data-key="categories">الأقسام</span>
+    </a>
+
+    <a class="sidebar-link" onclick="navigate('/products');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+      <span data-key="products">المنتجات</span>
+    </a>
+
+    <a class="sidebar-link" onclick="navigate('/products',{sort:'popular'});closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span data-key="offers">العروض</span>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">حسابي</div>
+
+    <a class="sidebar-link" onclick="App.user ? navigate('/profile') : showLoginModal();closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span data-key="profile">حسابي</span>
+    </a>
+
+    <a class="sidebar-link" onclick="App.user ? navigate('/orders') : showLoginModal();closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span data-key="orders">طلباتي</span>
+    </a>
+
+    <a class="sidebar-link" onclick="App.user ? navigate('/favorites') : showLoginModal();closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span data-key="favorites">المفضلة</span>
+    </a>
+
+    <a class="sidebar-link" onclick="App.user ? navigate('/loyalty') : showLoginModal();closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span data-key="loyalty">نقاط المكافآت</span>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">أخرى</div>
+
+    <a class="sidebar-link" onclick="navigate('/faq');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-key="faq">الأسئلة الشائعة</span>
+    </a>
+
+    <a class="sidebar-link" onclick="navigate('/about');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span data-key="about">من نحن</span>
+    </a>
+
+    <a class="sidebar-link" onclick="navigate('/privacy');closeSidebar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span data-key="privacy">سياسة الخصوصية</span>
+    </a>
+
+    <!-- تبديل المظهر -->
+    <div class="sidebar-link" onclick="toggleTheme()" style="cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span>تبديل المظهر</span>
+    </div>
+  </div>
+
+  <!-- اختيار اللغة -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">اللغة</div>
+    <div class="lang-currency-grid">
+      <div class="lang-btn active" onclick="setLanguage('ar');this.parentNode.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">🇸🇦 العربية</div>
+      <div class="lang-btn" onclick="setLanguage('en');this.parentNode.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">🇬🇧 English</div>
+      <div class="lang-btn" onclick="setLanguage('tr');this.parentNode.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">🇹🇷 Türkçe</div>
+    </div>
+  </div>
+
+  <!-- التواصل الاجتماعي -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">تابعنا</div>
+    <div class="sidebar-social">
+      <a class="social-btn" id="sidebar-facebook" href="#" target="_blank" title="Facebook">📘</a>
+      <a class="social-btn" id="sidebar-instagram" href="#" target="_blank" title="Instagram">📸</a>
+      <a class="social-btn" id="sidebar-whatsapp" href="#" target="_blank" title="WhatsApp">💬</a>
+      <a class="social-btn" id="sidebar-phone" href="tel:#" title="اتصل بنا">📞</a>
+    </div>
+  </div>
+
+  <!-- المطور -->
+  <div class="sidebar-dev">
+    <div style="margin-bottom:4px">تطوير بواسطة</div>
+    <strong style="color:var(--primary)">SMART DEV</strong>
+    <div style="margin-top:6px">
+      <a href="https://wa.me/201234567890" target="_blank" style="color:var(--primary);font-size:12px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display:inline"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        واتساب
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     المحتوى الرئيسي (SPA View)
+     ============================================================ -->
+<main class="main-content">
+  <div id="main-view">
+    <div class="page-loading">
+      <div class="loading-spinner"></div>
+      <p style="color:var(--text3);font-size:14px">جاري تحميل المتجر...</p>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     السلة الجانبية
+     ============================================================ -->
+<div class="sidebar-overlay" id="cart-overlay"></div>
+
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary)"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      السلة
+    </div>
+    <button class="modal-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list">
+    <div class="cart-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <p>السلة فارغة</p>
+    </div>
+  </div>
+  <div id="cart-footer" style="display:none;padding:16px 20px;border-top:1px solid var(--border)"></div>
+</div>
+
+<!-- ============================================================
+     Modal عام
+     ============================================================ -->
+<div class="modal-overlay" id="modal-overlay" onclick="this === event.target && closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-title">عنوان النافذة</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     نافذة البحث
+     ============================================================ -->
+<div class="modal-overlay" id="search-modal" onclick="this === event.target && this.classList.remove('active')">
+  <div class="modal" style="max-width:600px" onclick="event.stopPropagation()">
+    <div style="padding:20px">
+      <div style="display:flex;align-items:center;gap:12px;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-input" type="text" placeholder="ابحث عن منتج..." style="flex:1;background:none;font-size:16px;color:var(--text);font-family:inherit">
+        <button id="search-close" onclick="document.getElementById('search-modal').classList.remove('active')" style="color:var(--text3);font-size:20px;cursor:pointer">✕</button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="footer" id="main-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- العلامة التجارية -->
+      <div>
+        <div class="footer-brand-name store-name-text">SMART MENU</div>
+        <p class="footer-brand-desc store-desc-text">نظام إدارة المطاعم والكافيهات الاحترافي</p>
+        <div class="footer-social">
+          <a id="footer-facebook" href="#" target="_blank" title="Facebook">📘</a>
+          <a id="footer-instagram" href="#" target="_blank" title="Instagram">📸</a>
+          <a id="footer-whatsapp" href="#" target="_blank" title="WhatsApp">💬</a>
+          <a id="footer-tiktok" href="#" target="_blank" title="TikTok">🎵</a>
+        </div>
+      </div>
+
+      <!-- روابط سريعة -->
+      <div>
+        <div class="footer-title">روابط سريعة</div>
+        <ul class="footer-links">
+          <li><a onclick="navigate('/')">الرئيسية</a></li>
+          <li><a onclick="navigate('/products')">المنتجات</a></li>
+          <li><a onclick="navigate('/categories')">الأقسام</a></li>
+          <li><a onclick="navigate('/products',{sort:'popular'})">العروض</a></li>
+        </ul>
+      </div>
+
+      <!-- حسابي -->
+      <div>
+        <div class="footer-title">حسابي</div>
+        <ul class="footer-links">
+          <li><a onclick="App.user ? navigate('/profile') : showLoginModal()">ملفي الشخصي</a></li>
+          <li><a onclick="App.user ? navigate('/orders') : showLoginModal()">طلباتي</a></li>
+          <li><a onclick="App.user ? navigate('/favorites') : showLoginModal()">المفضلة</a></li>
+          <li><a onclick="App.user ? navigate('/loyalty') : showLoginModal()">نقاط المكافآت</a></li>
+        </ul>
+      </div>
+
+      <!-- معلومات -->
+      <div>
+        <div class="footer-title">معلومات</div>
+        <ul class="footer-links">
+          <li><a onclick="navigate('/faq')">الأسئلة الشائعة</a></li>
+          <li><a onclick="navigate('/about')">من نحن</a></li>
+          <li><a onclick="navigate('/privacy')">سياسة الخصوصية</a></li>
+          <li><a onclick="navigate('/terms')">الشروط والأحكام</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 SMART MENU — جميع الحقوق محفوظة</span>
+      <span>تطوير بواسطة <strong style="color:var(--primary)">SMART DEV</strong></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     Bottom Navigation (Mobile)
+     ============================================================ -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-item active" onclick="navigate('/')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    <span>الرئيسية</span>
+  </div>
+  <div class="bottom-nav-item" onclick="navigate('/categories')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>الأقسام</span>
+  </div>
+  <div class="bottom-nav-item" onclick="openCart()" style="position:relative">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span>السلة</span>
+    <span class="cart-badge" style="position:absolute;top:2px;right:18px;background:var(--danger);color:white;font-size:9px;padding:1px 4px;border-radius:10px;display:none">0</span>
+  </div>
+  <div class="bottom-nav-item" onclick="App.user ? navigate('/orders') : showLoginModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+    <span>طلباتي</span>
+  </div>
+  <div class="bottom-nav-item" onclick="App.user ? navigate('/profile') : showLoginModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>حسابي</span>
+  </div>
+</nav>
+
+<!-- ============================================================
+     زر الرجوع للأعلى
+     ============================================================ -->
+<button class="scroll-top" title="رجوع للأعلى">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- ============================================================
+     حاوية الإشعارات (Toast)
+     ============================================================ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============================================================
+     صفحة تسجيل الدخول للوحة التحكم
+     ============================================================ -->
+<div id="admin-login-page">
+  <div class="admin-login-box">
+    <div class="admin-login-logo">🛡️</div>
+    <h2 class="admin-login-title">لوحة التحكم</h2>
+    <p class="admin-login-subtitle">SMART MENU CMS — دخول آمن للمسؤولين فقط</p>
+
+    <div class="form-group" style="text-align:right">
+      <label class="form-label">معرف الدخول</label>
+      <input class="form-input" id="admin-id" type="text" placeholder="admin@smartmenu.com أو 01000000000"
+        onkeydown="if(event.key==='Enter')document.getElementById('admin-password').focus()">
+    </div>
+
+    <div class="form-group" style="text-align:right">
+      <label class="form-label">كلمة المرور</label>
+      <div style="position:relative">
+        <input class="form-input" id="admin-password" type="password" placeholder="كلمة المرور"
+          onkeydown="if(event.key==='Enter')adminLogin()">
+        <button onclick="const p=document.getElementById('admin-password');p.type=p.type==='password'?'text':'password'"
+          style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px">👁</button>
+      </div>
+    </div>
+
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px;text-align:right;margin-bottom:16px;cursor:pointer">
+      <input type="checkbox" id="admin-remember"> تذكرني
+    </label>
+
+    <button class="btn btn-primary btn-block" onclick="adminLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      دخول إلى لوحة التحكم
+    </button>
+
+    <div style="margin-top:16px;text-align:center">
+      <button onclick="closeAdminPanel()" style="color:var(--text3);font-size:13px;cursor:pointer">
+        ← العودة للمتجر
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     لوحة التحكم الكاملة
+     ============================================================ -->
+<div id="admin-panel">
+  <div class="admin-layout">
+
+    <!-- الشريط الجانبي للأدمن -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🛡️</div>
+          <div>
+            <div class="admin-logo">SMART MENU</div>
+            <div class="admin-subtitle">لوحة التحكم</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="admin-nav">
+
+        <!-- الرئيسية -->
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">الرئيسية</div>
+          <div class="admin-nav-item active" data-page="dashboard" onclick="adminNavTo('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            لوحة التحكم
+          </div>
+          <div class="admin-nav-item" data-page="analytics" onclick="adminNavTo('analytics')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            التحليلات
+          </div>
+        </div>
+
+        <!-- المتجر -->
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">إدارة المتجر</div>
+          <div class="admin-nav-item" data-page="products" onclick="adminNavTo('products')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+            المنتجات
+          </div>
+          <div class="admin-nav-item" data-page="categories" onclick="adminNavTo('categories')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            الأقسام
+          </div>
+          <div class="admin-nav-item" data-page="sliders" onclick="adminNavTo('sliders')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            البنرات
+          </div>
+        </div>
+
+        <!-- الطلبات -->
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">الطلبات والعملاء</div>
+          <div class="admin-nav-item" data-page="orders" onclick="adminNavTo('orders')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            الطلبات
+            <span class="admin-nav-badge" id="pending-badge">0</span>
+          </div>
+          <div class="admin-nav-item" data-page="customers" onclick="adminNavTo('customers')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            العملاء
+          </div>
+          <div class="admin-nav-item" data-page="reviews" onclick="adminNavTo('reviews')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            التعليقات
+          </div>
+        </div>
+
+        <!-- المالية -->
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">المالية والتسويق</div>
+          <div class="admin-nav-item" data-page="payments" onclick="adminNavTo('payments')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            طرق الدفع
+          </div>
+          <div class="admin-nav-item" data-page="coupons" onclick="adminNavTo('coupons')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            الكوبونات
+          </div>
+          <div class="admin-nav-item" data-page="notifications" onclick="adminNavTo('notifications')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            الإشعارات
+          </div>
+        </div>
+
+        <!-- النظام -->
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">النظام</div>
+          <div class="admin-nav-item" data-page="faq" onclick="adminNavTo('faq')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            الأسئلة الشائعة
+          </div>
+          <div class="admin-nav-item" data-page="messages" onclick="adminNavTo('messages')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            الرسائل
+          </div>
+          <div class="admin-nav-item" data-page="logs" onclick="adminNavTo('logs')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            سجل النشاط
+          </div>
+          <div class="admin-nav-item" data-page="backup" onclick="adminNavTo('backup')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            النسخ الاحتياطية
+          </div>
+          <div class="admin-nav-item" data-page="settings" onclick="adminNavTo('settings')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            الإعدادات
+          </div>
+        </div>
+      </nav>
+
+      <!-- تذييل السايدبار -->
+      <div style="padding:16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">
+        <div class="user-avatar" style="width:36px;height:36px;font-size:14px" id="admin-avatar">م</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="admin-name">المدير</div>
+          <div style="font-size:11px;color:var(--text3)">مدير النظام</div>
+        </div>
+        <button onclick="adminLogout()" title="خروج" style="color:var(--danger);font-size:16px;cursor:pointer">⏻</button>
+      </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي للأدمن -->
+    <div class="admin-main">
+      <!-- هيدر الأدمن -->
+      <div class="admin-header">
+        <button onclick="document.getElementById('admin-sidebar').classList.toggle('open')" class="header-btn" style="display:none" id="admin-menu-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="admin-page-title" id="admin-page-title">لوحة التحكم</span>
+        <div class="admin-header-spacer"></div>
+        <button class="btn btn-outline btn-sm" onclick="closeAdminPanel()" style="gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          العودة للمتجر
+        </button>
+      </div>
+
+      <!-- صفحات لوحة التحكم -->
+      <div class="admin-content">
+        <div class="admin-page active" id="admin-page-dashboard"></div>
+        <div class="admin-page" id="admin-page-products"></div>
+        <div class="admin-page" id="admin-page-categories"></div>
+        <div class="admin-page" id="admin-page-orders"></div>
+        <div class="admin-page" id="admin-page-customers"></div>
+        <div class="admin-page" id="admin-page-reviews"></div>
+        <div class="admin-page" id="admin-page-notifications"></div>
+        <div class="admin-page" id="admin-page-payments"></div>
+        <div class="admin-page" id="admin-page-coupons"></div>
+        <div class="admin-page" id="admin-page-sliders"></div>
+        <div class="admin-page" id="admin-page-analytics"></div>
+        <div class="admin-page" id="admin-page-logs"></div>
+        <div class="admin-page" id="admin-page-backup"></div>
+        <div class="admin-page" id="admin-page-settings"></div>
+        <div class="admin-page" id="admin-page-messages"></div>
+        <div class="admin-page" id="admin-page-faq"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JavaScript
+     ============================================================ -->
+<script src="/js/app.js"></script>
+
+<!-- روتينج لوحة التحكم عبر الـ URL -->
+<script>
+  // فتح لوحة التحكم عبر الـ URL السري
+  if (location.pathname === '/X7mK29LpQ8T') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(openAdminPanel, 500));
+  }
+
+  // تحديث اسم الأدمن في الشريط الجانبي
+  const origAdminLogin = typeof adminLogin !== 'undefined' ? adminLogin : null;
+  document.addEventListener('DOMContentLoaded', () => {
+    const adminToken = localStorage.getItem('admin-token') || sessionStorage.getItem('admin-token');
+    if (adminToken) {
+      const nameEl = document.getElementById('admin-name');
+      const avatarEl = document.getElementById('admin-avatar');
+      if (nameEl && App.adminUser) {
+        nameEl.textContent = App.adminUser.full_name || 'المدير';
+        if (avatarEl) avatarEl.textContent = (App.adminUser.full_name || 'م')[0];
+      }
+    }
+    // إظهار زر القائمة الجانبية في الموبايل
+    const adminMenuBtn = document.getElementById('admin-menu-btn');
+    if (adminMenuBtn && window.innerWidth <= 768) adminMenuBtn.style.display = 'flex';
+  });
+
+  // تحديث badge الطلبات المعلقة كل 30 ثانية
+  setInterval(async () => {
+    if (App.adminToken) {
+      try {
+        const r = await fetch('/api/admin/dashboard', { headers: { Authorization: `Bearer ${App.adminToken}` } });
+        const d = await r.json();
+        const badge = document.getElementById('pending-badge');
+        if (badge && d.stats) badge.textContent = d.stats.pending_orders || 0;
+      } catch(e) {}
+    }
+  }, 30000);
+</script>
+
+</body>
+</html>
