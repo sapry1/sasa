@@ -2,10 +2,10 @@
   "name": "smart-menu-cms",
   "version": "1.0.0",
   "description": "SMART MENU CMS - نظام إدارة المطاعم والكافيهات الاحترافي",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
